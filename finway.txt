@@ -1,0 +1,911 @@
+import React, { useState } from 'react';
+import { 
+  TrendingUp, Wallet, ArrowUpRight, ArrowDownRight, Target, Plus, 
+  Trash2, BookOpen, Award, CheckCircle, HelpCircle, BarChart3, 
+  Zap, ChevronRight, Calculator, RefreshCw, Presentation, ShieldCheck, 
+  Globe, Sparkles, PieChart, Layers, DollarSign, X, Check, Info
+} from 'lucide-react';
+
+export default function App() {
+  // --- STATE MANAGEMENT ---
+  const [lang, setLang] = useState('uz');
+  const [activeTab, setActiveTab] = useState('dashboard'); // dashboard, transactions, goals, calculator, learn
+  const [showPitchModal, setShowPitchModal] = useState(false);
+
+  // Transactions State
+  const [transactions, setTransactions] = useState([
+    { id: 1, title: 'Oylik Maosh / Monthly Salary', amount: 8500000, type: 'income', category: 'Maosh', date: '2026-10-01' },
+    { id: 2, title: 'Supermarket xaridlari', amount: 1200000, type: 'expense', category: 'Oziq-ovqat', date: '2026-10-03' },
+    { id: 3, title: 'Kommunal to\'lovlar (Gaz/Elektr)', amount: 450000, type: 'expense', category: 'Kommunal', date: '2026-10-05' },
+    { id: 4, title: 'Freelance IT Loyiha', amount: 3200000, type: 'income', category: 'Biznes', date: '2026-10-08' },
+    { id: 5, title: 'Jamoat transporti va Taksi', amount: 280000, type: 'expense', category: 'Transport', date: '2026-10-09' },
+  ]);
+
+  const [newTitle, setNewTitle] = useState('');
+  const [newAmount, setNewAmount] = useState('');
+  const [newType, setNewType] = useState('expense');
+  const [newCategory, setNewCategory] = useState('Oziq-ovqat');
+
+  // Savings Goals State
+  const [goals, setGoals] = useState([
+    { id: 1, title: 'MacBook M3 Pro (Ish uchun)', target: 22000000, current: 14500000, color: 'from-emerald-500 to-teal-400' },
+    { id: 2, title: 'Favqulodda Zaxira (Emergency Fund)', target: 30000000, current: 21000000, color: 'from-cyan-500 to-blue-500' },
+    { id: 3, title: 'Xalqaro Investitsiya Portfeli', target: 50000000, current: 18500000, color: 'from-purple-500 to-indigo-500' },
+  ]);
+
+  const [goalTitle, setGoalTitle] = useState('');
+  const [goalTarget, setGoalTarget] = useState('');
+
+  // Compound Interest Calculator State
+  const [initInvestment, setInitInvestment] = useState(10000000);
+  const [monthlyContrib, setMonthlyContrib] = useState(1500000);
+  const [annualRate, setAnnualRate] = useState(18);
+  const [years, setYears] = useState(5);
+
+  // Quiz State
+  const [userAnswers, setUserAnswers] = useState({});
+  const [quizScore, setQuizScore] = useState(null);
+
+  const t = {
+    uz: {
+      appName: 'FinSmart',
+      tagline: 'Next-Gen FinTech & EdTech Hub',
+      pitchBtn: '🏆 Pitch Mode (Hakamlar)',
+      totalBalance: 'Umumiy Sof Balans',
+      income: 'Oylik Daromad',
+      expense: 'Oylik Xarajat',
+      savingsRatio: 'Jamg\'arma Nisbati',
+      dashboard: 'Dashboard',
+      transactions: 'Operatsiyalar',
+      goals: 'Maqsadlar',
+      calculator: 'Kalkulyator',
+      learn: 'EdTech Hub',
+      addTx: 'Yangi Operatsiya Qo\'shish',
+      title: 'Operatsiya nomi',
+      amount: 'Summa (UZS)',
+      type: 'Turi',
+      category: 'Kategoriya',
+      add: 'Saqlash',
+      recentTx: 'So\'nggi Operatsiyalar',
+      noTx: 'Hali operatsiyalar kiritilmadi',
+      incomeType: 'Daromad (+)',
+      expenseType: 'Xarajat (-)',
+      goalsTitle: 'Jamg\'arma Maqsadlari',
+      addGoal: 'Yangi Maqsad Qo\'shish',
+      target: 'Maqsad Summasi (UZS)',
+      progress: 'Bajarilishi',
+      calcTitle: 'Murakkab Foiz & Investitsiya Simulyatori',
+      initInv: 'Boshlang\'ich Investitsiya',
+      mContrib: 'Oylik Qo\'shimcha Jamg\'arma',
+      aRate: 'Yillik Kutilayotgan Daromad (%)',
+      period: 'Muddati (Yil)',
+      estFutureVal: 'Kutilayotgan Yakuniy Kapital',
+      quizTitle: 'Moliyaviy Savodxonlik Testi',
+      quizDesc: 'Bilimingizni sinab ko\'ring va darajangizni aniqlang',
+      submitQuiz: 'Testni Yakunlash',
+      score: 'Sizning Natijangiz',
+      lessonsTitle: 'Interaktiv Moliyaviy Darslar',
+      deleteConfirm: 'O\'chirildi',
+    },
+    en: {
+      appName: 'FinSmart',
+      tagline: 'Next-Gen FinTech & EdTech Platform',
+      pitchBtn: '🏆 Pitch Mode (Judges)',
+      totalBalance: 'Total Net Balance',
+      income: 'Monthly Income',
+      expense: 'Monthly Expense',
+      savingsRatio: 'Savings Ratio',
+      dashboard: 'Dashboard',
+      transactions: 'Transactions',
+      goals: 'Goals',
+      calculator: 'Growth Simulator',
+      learn: 'Literacy Hub',
+      addTx: 'Add New Transaction',
+      title: 'Description Title',
+      amount: 'Amount (UZS)',
+      type: 'Transaction Type',
+      category: 'Category',
+      add: 'Save Transaction',
+      recentTx: 'Recent Transactions',
+      noTx: 'No transaction recorded yet',
+      incomeType: 'Income (+)',
+      expenseType: 'Expense (-)',
+      goalsTitle: 'Interactive Savings Goals',
+      addGoal: 'Create New Goal',
+      target: 'Target Goal Amount (UZS)',
+      progress: 'Progress',
+      calcTitle: 'Compound Interest & Investment Calculator',
+      initInv: 'Initial Capital',
+      mContrib: 'Monthly Deposit',
+      aRate: 'Expected Annual Return (%)',
+      period: 'Horizon (Years)',
+      estFutureVal: 'Projected Net Worth',
+      quizTitle: 'Financial Literacy Quiz',
+      quizDesc: 'Test your money skills and earn performance status',
+      submitQuiz: 'Submit & Grade',
+      score: 'Your Score Result',
+      lessonsTitle: 'Core Financial Education',
+      deleteConfirm: 'Deleted',
+    }
+  }[lang];
+
+  const totalIncome = transactions.filter(t => t.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
+  const totalExpense = transactions.filter(t => t.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
+  const netBalance = totalIncome - totalExpense;
+  const savingsRate = totalIncome > 0 ? Math.max(0, (((totalIncome - totalExpense) / totalIncome) * 100)).toFixed(1) : 0;
+
+  // Compound Interest Formula
+  const calculateCompound = () => {
+    let total = Number(initInvestment);
+    const r = Number(annualRate) / 100 / 12;
+    const n = Number(years) * 12;
+    const p = Number(monthlyContrib);
+
+    for (let i = 0; i < n; i++) {
+      total = (total + p) * (1 + r);
+    }
+    return Math.round(total);
+  };
+
+  const handleAddTransaction = (e) => {
+    e.preventDefault();
+    if (!newTitle || !newAmount) return;
+    const item = {
+      id: Date.now(),
+      title: newTitle,
+      amount: Number(newAmount),
+      type: newType,
+      category: newCategory,
+      date: new Date().toISOString().split('T')[0]
+    };
+    setTransactions([item, ...transactions]);
+    setNewTitle('');
+    setNewAmount('');
+  };
+
+  const handleDeleteTransaction = (id) => {
+    setTransactions(transactions.filter(t => t.id !== id));
+  };
+
+  const handleAddGoal = (e) => {
+    e.preventDefault();
+    if (!goalTitle || !goalTarget) return;
+    const colors = [
+      'from-emerald-500 to-teal-400',
+      'from-cyan-500 to-blue-500',
+      'from-purple-500 to-indigo-500',
+      'from-amber-500 to-rose-500'
+    ];
+    const newG = {
+      id: Date.now(),
+      title: goalTitle,
+      target: Number(goalTarget),
+      current: 0,
+      color: colors[goals.length % colors.length]
+    };
+    setGoals([...goals, newG]);
+    setGoalTitle('');
+    setGoalTarget('');
+  };
+
+  const quizQuestions = [
+    {
+      id: 1,
+      q: lang === 'uz' ? '50/30/20 Qoidasi bo\'yicha daromadning 20% qismi qayerga yo\'naltirilishi kerak?' : 'According to the 50/30/20 rule, where should 20% of your income go?',
+      options: [
+        lang === 'uz' ? 'Kiyim va restoranlarga' : 'Entertainment & dining',
+        lang === 'uz' ? 'Majburiy kommunal to\'lovlarga' : 'Rent & essentials',
+        lang === 'uz' ? 'Jamg\'arma va investitsiyalarga' : 'Savings & investments',
+        lang === 'uz' ? 'Kredit foizlarini qoplashga' : 'Debt penalty clearance'
+      ],
+      correct: 2
+    },
+    {
+      id: 2,
+      q: lang === 'uz' ? 'Murakkab foiz (Compound Interest) effekti nimani anglatadi?' : 'What best describes Compound Interest?',
+      options: [
+        lang === 'uz' ? 'Faqat dastlabki summaga bir marta foiz qo\'shilishi' : 'Simple interest calculated on base principal',
+        lang === 'uz' ? 'Yig\'ilgan foizlar ustiga ham yangi foizlar hisoblanishi' : 'Earning interest on top of previously earned interest',
+        lang === 'uz' ? 'Bank komissiyalarining oylik oshib borishi' : 'Monthly banking maintenance fees',
+        lang === 'uz' ? 'Inflyatsiya tufayli xarid qobiliyatining pasayishi' : 'Erosion of money value over time'
+      ],
+      correct: 1
+    },
+    {
+      id: 3,
+      q: lang === 'uz' ? 'Favqulodda jamg\'arma (Emergency Fund) hajmi ideal holda qancha bo\'lishi kerak?' : 'What is the recommended size of an Emergency Fund?',
+      options: [
+        lang === 'uz' ? '1 haftalik oziq-ovqat xarajati' : '1 week of groceries',
+        lang === 'uz' ? '3 dan 6 oygacha bo\'lgan zaruriy xarajatlar hajmi' : '3 to 6 months of living expenses',
+        lang === 'uz' ? 'Xaridorning 1 yillik orzu qilgan maoshi' : '1 year of gross dream salary',
+        lang === 'uz' ? 'Jamg\'arma shart emas' : 'No emergency fund needed'
+      ],
+      correct: 1
+    }
+  ];
+
+  const handleQuizSubmit = () => {
+    let score = 0;
+    quizQuestions.forEach(q => {
+      if (userAnswers[q.id] === q.correct) {
+        score += 33.34;
+      }
+    });
+    setQuizScore(Math.round(score));
+  };
+
+  return (
+    <div className="min-h-screen bg-[#07090e] text-slate-100 font-sans relative overflow-x-hidden selection:bg-emerald-500 selection:text-slate-950">
+      
+      {/* CYBERPUNK NEON GLOW BACKGROUNDS */}
+      <div className="fixed top-[-10%] left-[-10%] w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="fixed top-[40%] left-[35%] w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[160px] pointer-events-none" />
+
+      {/* HEADER NAVBAR */}
+      <header className="sticky top-0 z-40 backdrop-blur-2xl bg-[#07090e]/80 border-b border-slate-800/80 px-4 lg:px-8 py-3.5">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          
+          {/* Logo & Branding */}
+          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-400 via-teal-400 to-cyan-500 p-0.5 shadow-lg shadow-emerald-500/20">
+              <div className="w-full h-full bg-[#07090e] rounded-[10px] flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-emerald-400" />
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <h1 className="text-xl font-extrabold bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+                  {t.appName}
+                </h1>
+                <span className="px-1.5 py-0.5 text-[9px] font-bold bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/30 uppercase tracking-wider">
+                  v2.5 Live
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 font-medium">{t.tagline}</p>
+            </div>
+          </div>
+
+          {/* Action Tools */}
+          <div className="flex items-center space-x-3">
+            {/* Language Toggle */}
+            <button
+              onClick={() => setLang(lang === 'uz' ? 'en' : 'uz')}
+              className="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-xs font-semibold flex items-center space-x-2 transition text-slate-300 shadow-sm"
+            >
+              <Globe className="w-3.5 h-3.5 text-cyan-400" />
+              <span>{lang.toUpperCase()}</span>
+            </button>
+
+            {/* Pitch Modal Button */}
+            <button
+              onClick={() => setShowPitchModal(true)}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-amber-500/20 flex items-center space-x-2 transition transform active:scale-95"
+            >
+              <Presentation className="w-4 h-4" />
+              <span>{t.pitchBtn}</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* NAVIGATION BAR */}
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 mt-6">
+        <div className="flex space-x-1.5 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800/80 backdrop-blur-xl overflow-x-auto no-scrollbar shadow-inner">
+          {[
+            { id: 'dashboard', label: t.dashboard, icon: BarChart3 },
+            { id: 'transactions', label: t.transactions, icon: Wallet },
+            { id: 'goals', label: t.goals, icon: Target },
+            { id: 'calculator', label: t.calculator, icon: Calculator },
+            { id: 'learn', label: t.learn, icon: BookOpen },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const active = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 ${
+                  active 
+                    ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20' 
+                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50'
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${active ? 'text-slate-950' : 'text-slate-400'}`} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* MAIN BODY CONTENT */}
+      <main className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
+
+        {/* --- TAB 1: REAL-TIME DASHBOARD --- */}
+        {activeTab === 'dashboard' && (
+          <div className="space-y-6">
+            
+            {/* TOP METRICS CARDS */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              
+              {/* Total Balance Card */}
+              <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl hover:border-emerald-500/40 transition shadow-lg relative overflow-hidden group">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-400">{t.totalBalance}</p>
+                    <h3 className="text-2xl font-black mt-1 text-white tracking-tight">
+                      {netBalance.toLocaleString()} <span className="text-xs text-emerald-400 font-medium">UZS</span>
+                    </h3>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <DollarSign className="w-5 h-5" />
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center space-x-1.5 text-xs text-emerald-400 font-semibold">
+                  <TrendingUp className="w-3.5 h-3.5" />
+                  <span>{netBalance >= 0 ? 'Ijobiy moliyaviy balans' : 'Salbiy balans ogohlantirishi'}</span>
+                </div>
+              </div>
+
+              {/* Monthly Income Card */}
+              <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl hover:border-cyan-500/40 transition shadow-lg">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-400">{t.income}</p>
+                    <h3 className="text-2xl font-black mt-1 text-cyan-400 tracking-tight">
+                      +{totalIncome.toLocaleString()} <span className="text-xs text-cyan-500 font-medium">UZS</span>
+                    </h3>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                    <ArrowUpRight className="w-5 h-5" />
+                  </div>
+                </div>
+                <p className="mt-4 text-xs text-slate-400 font-medium">{transactions.filter(t=>t.type==='income').length} ta tushum manbai</p>
+              </div>
+
+              {/* Monthly Expense Card */}
+              <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl hover:border-rose-500/40 transition shadow-lg">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-400">{t.expense}</p>
+                    <h3 className="text-2xl font-black mt-1 text-rose-400 tracking-tight">
+                      -{totalExpense.toLocaleString()} <span className="text-xs text-rose-500 font-medium">UZS</span>
+                    </h3>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                    <ArrowDownRight className="w-5 h-5" />
+                  </div>
+                </div>
+                <p className="mt-4 text-xs text-slate-400 font-medium">{transactions.filter(t=>t.type==='expense').length} ta chiqim operatsiyasi</p>
+              </div>
+
+              {/* Savings Ratio Card */}
+              <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl hover:border-indigo-500/40 transition shadow-lg">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-400">{t.savingsRatio}</p>
+                    <h3 className="text-2xl font-black mt-1 text-indigo-400 tracking-tight">
+                      {savingsRate}%
+                    </h3>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    <Zap className="w-5 h-5" />
+                  </div>
+                </div>
+                <div className="mt-4 w-full bg-slate-950 h-2 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                  <div 
+                    className="bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 h-full rounded-full transition-all duration-500" 
+                    style={{ width: `${Math.min(100, Math.max(0, savingsRate))}%` }} 
+                  />
+                </div>
+              </div>
+
+            </div>
+
+            {/* MIDDLE DASHBOARD SECTION: TRANSACTIONS & GOALS */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              {/* Recent Transactions List */}
+              <div className="lg:col-span-2 p-6 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl">
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-sm font-extrabold text-white flex items-center space-x-2">
+                    <Wallet className="w-4 h-4 text-emerald-400" />
+                    <span>{t.recentTx}</span>
+                  </h3>
+                  <button 
+                    onClick={() => setActiveTab('transactions')}
+                    className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 transition"
+                  >
+                    <span>Barchasini boshqarish</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {transactions.slice(0, 5).map((tx) => (
+                    <div 
+                      key={tx.id} 
+                      className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/50 hover:bg-slate-800/60 border border-slate-800/80 transition"
+                    >
+                      <div className="flex items-center space-x-3.5">
+                        <div className={`p-2.5 rounded-xl ${tx.type === 'income' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}`}>
+                          {tx.type === 'income' ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-slate-100">{tx.title}</p>
+                          <p className="text-[10px] text-slate-400 font-medium">{tx.category} • {tx.date}</p>
+                        </div>
+                      </div>
+                      <span className={`text-xs font-extrabold ${tx.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                        {tx.type === 'income' ? '+' : '-'}{tx.amount.toLocaleString()} UZS
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Goals Quick Tracker */}
+              <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <h3 className="text-sm font-extrabold text-white flex items-center space-x-2">
+                      <Target className="w-4 h-4 text-cyan-400" />
+                      <span>{t.goalsTitle}</span>
+                    </h3>
+                  </div>
+
+                  <div className="space-y-4">
+                    {goals.map((g) => {
+                      const pct = Math.min(100, Math.round((g.current / g.target) * 100));
+                      return (
+                        <div key={g.id} className="p-3.5 rounded-xl bg-slate-950/50 border border-slate-800/80 space-y-2">
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="font-bold text-slate-200">{g.title}</span>
+                            <span className="font-black text-cyan-400">{pct}%</span>
+                          </div>
+                          <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                            <div 
+                              className={`bg-gradient-to-r ${g.color} h-full rounded-full transition-all duration-700`} 
+                              style={{ width: `${pct}%` }} 
+                            />
+                          </div>
+                          <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+                            <span>{g.current.toLocaleString()} UZS</span>
+                            <span>{g.target.toLocaleString()} UZS</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setActiveTab('goals')}
+                  className="w-full mt-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-700 transition"
+                >
+                  Yangi Maqsad Belgilash +
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* --- TAB 2: TRANSACTIONS MANAGER --- */}
+        {activeTab === 'transactions' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Add Transaction Form */}
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl h-fit shadow-xl">
+              <h3 className="text-sm font-extrabold text-white mb-4 flex items-center space-x-2">
+                <Plus className="w-4 h-4 text-emerald-400" />
+                <span>{t.addTx}</span>
+              </h3>
+
+              <form onSubmit={handleAddTransaction} className="space-y-4">
+                <div>
+                  <label className="text-xs font-semibold text-slate-400 block mb-1">{t.title}</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Masalan: Restoran, Freelance oylik"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-emerald-500 text-slate-100 font-medium"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-400 block mb-1">{t.amount}</label>
+                  <input
+                    type="number"
+                    required
+                    placeholder="250000"
+                    value={newAmount}
+                    onChange={(e) => setNewAmount(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-emerald-500 text-slate-100 font-medium"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-400 block mb-1">{t.type}</label>
+                    <select
+                      value={newType}
+                      onChange={(e) => setNewType(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-emerald-500 text-slate-100 font-medium"
+                    >
+                      <option value="expense">{t.expenseType}</option>
+                      <option value="income">{t.incomeType}</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-slate-400 block mb-1">{t.category}</label>
+                    <select
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-emerald-500 text-slate-100 font-medium"
+                    >
+                      <option value="Oziq-ovqat">Oziq-ovqat</option>
+                      <option value="Transport">Transport</option>
+                      <option value="Kommunal">Kommunal</option>
+                      <option value="Maosh">Maosh</option>
+                      <option value="Biznes">Biznes</option>
+                      <option value="Boshqa">Boshqa</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 hover:opacity-95 transition active:scale-[0.98]"
+                >
+                  {t.add}
+                </button>
+              </form>
+            </div>
+
+            {/* Transactions History Table */}
+            <div className="lg:col-span-2 p-6 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl">
+              <h3 className="text-sm font-extrabold text-white mb-4">{t.recentTx}</h3>
+
+              <div className="space-y-3">
+                {transactions.map((tx) => (
+                  <div
+                    key={tx.id}
+                    className="flex items-center justify-between p-4 rounded-xl bg-slate-950/50 border border-slate-800/80 hover:bg-slate-800/60 transition"
+                  >
+                    <div className="flex items-center space-x-3.5">
+                      <div className={`p-2.5 rounded-xl ${tx.type === 'income' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}`}>
+                        {tx.type === 'income' ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-slate-100">{tx.title}</p>
+                        <p className="text-[11px] text-slate-400 font-medium">{tx.category} • {tx.date}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-4">
+                      <span className={`text-xs font-black ${tx.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                        {tx.type === 'income' ? '+' : '-'}{tx.amount.toLocaleString()} UZS
+                      </span>
+                      <button
+                        onClick={() => handleDeleteTransaction(tx.id)}
+                        className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition"
+                        title="O'chirish"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* --- TAB 3: SAVINGS GOALS TRACKER --- */}
+        {activeTab === 'goals' && (
+          <div className="space-y-6">
+            
+            {/* Create Goal Card Form */}
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl shadow-xl">
+              <h3 className="text-sm font-extrabold text-white mb-4">{t.addGoal}</h3>
+              <form onSubmit={handleAddGoal} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input
+                  type="text"
+                  required
+                  placeholder="Maqsad nomi (masalan: Yangi Avtomobil)"
+                  value={goalTitle}
+                  onChange={(e) => setGoalTitle(e.target.value)}
+                  className="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 font-medium focus:outline-none focus:border-cyan-500"
+                />
+                <input
+                  type="number"
+                  required
+                  placeholder="Maqsad summasi (UZS)"
+                  value={goalTarget}
+                  onChange={(e) => setGoalTarget(e.target.value)}
+                  className="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 font-medium focus:outline-none focus:border-cyan-500"
+                />
+                <button
+                  type="submit"
+                  className="py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-extrabold text-xs shadow-lg shadow-cyan-500/20 hover:opacity-95 transition"
+                >
+                  {t.addGoal}
+                </button>
+              </form>
+            </div>
+
+            {/* Goals Interactive Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {goals.map((g) => {
+                const pct = Math.min(100, Math.round((g.current / g.target) * 100));
+                return (
+                  <div key={g.id} className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl relative overflow-hidden group hover:border-slate-700 transition shadow-lg space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="text-sm font-bold text-white">{g.title}</h4>
+                        <p className="text-xs text-slate-400 font-medium mt-0.5">Maqsad: {g.target.toLocaleString()} UZS</p>
+                      </div>
+                      <span className="text-lg font-black text-cyan-400">{pct}%</span>
+                    </div>
+
+                    <div className="w-full bg-slate-950 h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                      <div 
+                        className={`bg-gradient-to-r ${g.color} h-full rounded-full transition-all duration-700`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-slate-400 font-medium">Jamg'arildi:</span>
+                      <span className="font-extrabold text-emerald-400">{g.current.toLocaleString()} UZS</span>
+                    </div>
+
+                    <div className="pt-2 flex space-x-2">
+                      <button 
+                        onClick={() => {
+                          const updated = goals.map(item => item.id === g.id ? {...item, current: item.current + 1000000} : item);
+                          setGoals(updated);
+                        }}
+                        className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold rounded-xl border border-slate-700 transition"
+                      >
+                        + 1,000,000 UZS
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+          </div>
+        )}
+
+        {/* --- TAB 4: COMPOUND INTEREST SIMULATOR --- */}
+        {activeTab === 'calculator' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* Input Sliders */}
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl space-y-6 shadow-xl">
+              <h3 className="text-sm font-extrabold text-white flex items-center space-x-2">
+                <Calculator className="w-4 h-4 text-indigo-400" />
+                <span>{t.calcTitle}</span>
+              </h3>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-semibold">
+                  <span className="text-slate-400">{t.initInv}:</span>
+                  <span className="text-indigo-400 font-bold">{Number(initInvestment).toLocaleString()} UZS</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="100000000" 
+                  step="1000000" 
+                  value={initInvestment} 
+                  onChange={(e) => setInitInvestment(e.target.value)} 
+                  className="w-full accent-indigo-500 cursor-pointer"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-semibold">
+                  <span className="text-slate-400">{t.mContrib}:</span>
+                  <span className="text-indigo-400 font-bold">{Number(monthlyContrib).toLocaleString()} UZS</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="100000" 
+                  max="20000000" 
+                  step="500000" 
+                  value={monthlyContrib} 
+                  onChange={(e) => setMonthlyContrib(e.target.value)} 
+                  className="w-full accent-indigo-500 cursor-pointer"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-semibold">
+                  <span className="text-slate-400">{t.aRate}:</span>
+                  <span className="text-indigo-400 font-bold">{annualRate}%</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="1" 
+                  max="40" 
+                  value={annualRate} 
+                  onChange={(e) => setAnnualRate(e.target.value)} 
+                  className="w-full accent-indigo-500 cursor-pointer"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-semibold">
+                  <span className="text-slate-400">{t.period}:</span>
+                  <span className="text-indigo-400 font-bold">{years} Yil</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="1" 
+                  max="30" 
+                  value={years} 
+                  onChange={(e) => setYears(e.target.value)} 
+                  className="w-full accent-indigo-500 cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Compound Growth Result Card */}
+            <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-950/60 via-slate-900/90 to-slate-950 border border-indigo-500/30 backdrop-blur-xl flex flex-col justify-between shadow-2xl">
+              <div>
+                <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-bold tracking-wider uppercase border border-indigo-500/30">
+                  Prognoz Natijasi
+                </span>
+                <p className="text-xs text-slate-400 mt-5 font-semibold">{t.estFutureVal}</p>
+                <h2 className="text-3xl sm:text-4xl font-black mt-2 bg-gradient-to-r from-indigo-300 via-cyan-300 to-emerald-300 bg-clip-text text-transparent tracking-tight">
+                  {calculateCompound().toLocaleString()} UZS
+                </h2>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800/80 space-y-2 mt-6">
+                <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                  💡 <strong className="text-indigo-400">Murakkab foiz qoidasi:</strong> Insoniyatning 8-mo'jizasi hisoblangan murakkab foiz yillar davomida foiz ustiga ham foiz qo'shilishi orqali kapitalni eksponentsial tarzda oshiradi.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* --- TAB 5: FINANCIAL LITERACY HUB & QUIZ --- */}
+        {activeTab === 'learn' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* Interactive Assessment Quiz */}
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl space-y-6 shadow-xl">
+              <div>
+                <h3 className="text-sm font-extrabold text-white flex items-center space-x-2">
+                  <Award className="w-4 h-4 text-amber-400" />
+                  <span>{t.quizTitle}</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-1 font-medium">{t.quizDesc}</p>
+              </div>
+
+              <div className="space-y-4">
+                {quizQuestions.map((q) => (
+                  <div key={q.id} className="p-4 rounded-xl bg-slate-950/50 border border-slate-800/80 space-y-2.5">
+                    <p className="text-xs font-bold text-slate-100">{q.id}. {q.q}</p>
+                    <div className="grid grid-cols-1 gap-1.5">
+                      {q.options.map((opt, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setUserAnswers({ ...userAnswers, [q.id]: idx })}
+                          className={`text-left text-xs px-3.5 py-2.5 rounded-xl font-medium transition border ${
+                            userAnswers[q.id] === idx 
+                              ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 font-bold' 
+                              : 'bg-slate-900/90 border-slate-800 text-slate-400 hover:bg-slate-800'
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={handleQuizSubmit}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 text-slate-950 font-extrabold text-xs shadow-lg shadow-amber-500/20 hover:opacity-95 transition active:scale-[0.98]"
+              >
+                {t.submitQuiz}
+              </button>
+
+              {quizScore !== null && (
+                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-1">
+                  <p className="text-xs text-slate-300 font-semibold">{t.score}:</p>
+                  <p className="text-2xl font-black text-emerald-400">{quizScore} / 100 Ball</p>
+                </div>
+              )}
+            </div>
+
+            {/* Educational Insight Cards */}
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl space-y-4 shadow-xl">
+              <h3 className="text-sm font-extrabold text-white flex items-center space-x-2">
+                <BookOpen className="w-4 h-4 text-cyan-400" />
+                <span>{t.lessonsTitle}</span>
+              </h3>
+
+              <div className="space-y-3.5">
+                {[
+                  { title: '50/30/20 Byudjetlashtirish Qoidasi', desc: 'Daromadning 50% qismini zaruriy xarajatlarga, 30% qismini xohish va ko\'ngilochar ehtiyojlarga, hamda 20% qismini jamg\'arma va investitsiyalarga yo\'naltirish tartibi.' },
+                  { title: 'Favqulodda Moliyaviy Yostiqcha', desc: 'Kutilmagan xavf-hatarlar (ish yo\'qotish, kasallik) uchun kamida 3 oydan 6 oygacha bo\'lgan ehtiyojlarni qoplaydigan zaxira fondi.' },
+                  { title: 'Inflyatsiyaga Qarshi Investitsiya', desc: 'Naqd pul vaqti o\'tishi bilan qadrini yo\'qotadi. Pulingiz qiymatini saqlash va ko\'paytirish uchun uni unumli aktivlarga yo\'naltirish muhim.' },
+                ].map((item, i) => (
+                  <div key={i} className="p-4 rounded-xl bg-slate-950/50 border border-slate-800/80 space-y-1.5">
+                    <h4 className="text-xs font-extrabold text-cyan-400">{item.title}</h4>
+                    <p className="text-xs text-slate-300 leading-relaxed font-medium">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        )}
+
+      </main>
+
+      {/* --- JUDGES PITCH MODAL --- */}
+      {showPitchModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="bg-slate-900 border border-amber-500/40 rounded-2xl p-6 max-w-xl w-full shadow-2xl space-y-5 relative">
+            
+            <button 
+              onClick={() => setShowPitchModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white font-bold p-1"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center space-x-2.5 border-b border-slate-800 pb-3.5">
+              <Presentation className="w-5 h-5 text-amber-400" />
+              <div>
+                <h3 className="text-base font-extrabold text-white">🏆 Pitch Presentation (Hakamlar Uchun)</h3>
+                <p className="text-[11px] text-slate-400">FinSmart Platformasi Saralash Taqdimoti</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 text-xs text-slate-300">
+              <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+                <strong className="text-amber-400 font-bold block mb-1">1. Dolzarb Muammo:</strong>
+                <p className="leading-relaxed">Aholi va yoshlar o'rtasida shaxsiy byudjetni rejalashtirish ko'nikmasining kamligi va moliyaviy savodxonlik darajasining pastligi.</p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+                <strong className="text-emerald-400 font-bold block mb-1">2. Innovatsion Yechim:</strong>
+                <p className="leading-relaxed">FinSmart — FinTech analytics hamda EdTech ta'lim vositalarini yagona ultra-zamonaviy ekotizimda birlashtirgan universal portal.</p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+                <strong className="text-cyan-400 font-bold block mb-1">3. Texnik Dasturiy Stack:</strong>
+                <p className="leading-relaxed">React, Tailwind CSS, Lucide Icons, Compound Interest Engine, Multi-language (Uzbek/English), responsive Cyberpunk Glassmorphic UI.</p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowPitchModal(false)}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 text-slate-950 font-extrabold text-xs hover:opacity-95 transition"
+            >
+              Taqdimotni Yakunlash
+            </button>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
